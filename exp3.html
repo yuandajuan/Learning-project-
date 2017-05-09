@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>循环切换的图片</title>
+
+<style type="text/css">
+<!--
+* {
+	margin:0px;
+	padding:0px;
+}
+div{
+	width:426px;
+	height:224px;
+	overflow:hidden;
+}
+
+.div1 {
+	position:relative;
+}
+
+.num {
+	position:absolute;
+	left:50px;
+	top:200px;
+}
+
+.num li {
+	float:left;
+	text-align: center;
+	height:28px;
+	line-height:28px;
+	width:50px;
+	list-style:none;
+	background-color:#6CF;
+	margin-right:10px;
+	cursor:pointer;
+}
+
+.num li.current{
+	background-color:#F00;
+}
+
+
+-->
+</style>
+
+<script type="text/javascript">
+var index = 0; // 默认是现实第一个
+var lis;//所有的图片li
+var len = 0; //li的个数
+var time1 = null;
+var numLis = 0;//所有的数字li
+
+var imgHeight = 0; //修改marginTop值每次移动的距离
+var adUl;//包含图片的ul
+var time2 ;//2秒后执行某个函数
+
+
+window.onload = function (){
+	//获取所有图片的li
+	lis = document.getElementById('ad').getElementsByTagName('li');
+	imgHeight = lis[0].getElementsByTagName('img')[0].offsetHeight; //图片的高度
+	adUl = document.getElementById('ad');
+	//获取所有的数字
+	numLis = document.getElementById('num').getElementsByTagName('li');
+	//li的个数
+	len = lis.length;
+	//定时器
+	if(null == time2){
+		time2 = window.setTimeout(function (){
+			if(time1 == null){
+				time1 = window.setInterval('show()',20);
+			}
+			time2 = null;
+		},2000);
+		
+	}
+	
+	
+	//给数字li绑定单击事件
+	for(var i = 0; i < len; i ++){
+		numLis[i].onclick = function (event,i){
+			
+			if(time1 != null){
+				window.clearInterval(time1);
+				time1 = null;
+			}
+			
+			//判断当前点击的是第几个li
+			for(var j = 0; j < len; j++){
+				if(numLis[j] == this){
+					
+					numLis[index].className = '';
+					
+					index = j ;//当前显示的
+					
+					
+					//数字的背景色跟着变化
+					numLis[index].className = 'current';
+					
+					//重新启动定时器
+					if(null == time1){
+						//time1 = window.setInterval('show()',2000);
+					}
+					
+					break;
+					
+				}
+			}
+		}
+	}
+}
+/*改变的是图片ul的margin-top 值*/
+function show(){
+	var marginTop =  adUl.style.marginTop ? adUl.style.marginTop : 0;
+	var newMarginTop = parseInt(marginTop) - 1;
+	
+	
+	
+	if(newMarginTop < -(imgHeight*(index+1))){
+		numLis[index].className = '';
+		index ++;
+		//数字的背景色跟着变化
+		numLis[index].className = 'current';
+		//不能继续往上滚动
+		if(time1 != null){
+			window.clearInterval(time1);
+			time1 = null;
+			
+			if(time2 == null){
+				time2 = window.setTimeout(function (){
+					
+					if(index >= len -1){
+						//
+						numLis[index].className = '';
+						index = 0;
+						numLis[index].className = 'current';
+						adUl.style.marginTop = newMarginTop = 0 + 'px';
+					}
+					
+					if(time1 == null){
+						time1 = window.setInterval('show()',20);
+					}
+					time2 = null;
+				},2000);
+			}
+		}
+	} else {
+		adUl.style.marginTop = newMarginTop + 'px';
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
+</script>
+
+</head>
+
+<body>
+	<div style="border:1px solid red; height:50px;"></div>
+    <div class="div1">
+    	<ul id="ad" style="margin-top:0px;">
+        	<li><img src="images/ad1.jpg" /></li>
+            <li><img src="images/ad2.jpg" /></li>
+            <li><img src="images/ad3.jpg" /></li>
+            <li><img src="images/ad4.jpg" /></li>
+        </ul>
+        <ul class="num" id='num'>
+        	<li class="current">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+    </div>
+	<div style="border:1px solid red;"></div>
+</body>
+</html>
